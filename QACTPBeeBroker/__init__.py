@@ -38,6 +38,7 @@ class DataRecorder(ExtAbstract):
         self.recover = False
         self.move = []
         self.mimi = set()
+        self.pub = publisher_routing(exchange='CTPX', routing_key='')
 
     def on_trade(self, trade):
         pass
@@ -51,23 +52,14 @@ class DataRecorder(ExtAbstract):
     def on_tick(self, tick):
         """tick process function"""
         symbol = tick.symbol
-        # print(tick)
-        # print(dir(tick))#
-        # print(type(tick))
-        # print(tick.__str__)
-        # print(tick.__dict__)
         r =  tick.__dict__
-        #print()
-        #r = json.dumps(tick.__dict__)
         try:
             r['exchange'] = str(tick.exchange.value)
             r['datetime'] = str(r['datetime'])
             x = json.dumps(r)
-            
-            publisher_routing(exchange='CTPX', routing_key=r['symbol']).pub(x, routing_key=r['symbol'])
+            self.pub.pub(x, routing_key=r['symbol'])
         except Exception as e:
             print(e)
-        #print(r)
 
     def on_bar(self, bar):
         """bar process function"""
