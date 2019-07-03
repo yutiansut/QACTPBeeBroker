@@ -2,7 +2,7 @@ import multiprocessing
 from string import digits
 import json
 from json import dumps
-from datetime import time, datetime
+from datetime import time, datetime, date
 from time import sleep
 
 from ctpbee import ExtAbstract
@@ -10,6 +10,7 @@ from ctpbee import CtpBee
 from ctpbee import subscribe
 
 from QAPUBSUB.producer import publisher_routing
+import pymongo
 
 
 def auth_time(timed):
@@ -52,7 +53,7 @@ class DataRecorder(ExtAbstract):
     def on_tick(self, tick):
         """tick process function"""
         symbol = tick.symbol
-        r =  tick.__dict__
+        r = tick.__dict__
         try:
             r['exchange'] = str(tick.exchange.value)
             r['datetime'] = str(r['datetime'])
@@ -69,9 +70,6 @@ class DataRecorder(ExtAbstract):
     def on_shared(self, shared):
         """process shared function"""
         # print(shared)
-
-
-
 
 
 def go():
@@ -94,7 +92,17 @@ def go():
     app.start()
     import time
     time.sleep(2)
-    print(app.recorder.get_all_contracts())
+    contracts = app.recorder.get_all_contracts()
+    cur_date = str(date.today())
+    cur_contract = []
+    for item in contracts:
+        cont = item.__dict__
+        cont['exchange'] =cont['exchange'].value
+        cont['product'] = cont['product'].value
+        cur_contract.append(cont)
+
+    pymongo.MongoClient().QAREALTIME.contract.update_one({'exchange': 'ctp'}, {
+        '$set': {'contract': cur_contract, 'date': cur_date}},upsert=True)
 
     for contract in app.recorder.get_all_contracts():
         print(contract.symbol)
