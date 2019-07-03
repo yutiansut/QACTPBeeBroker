@@ -103,7 +103,7 @@ def go():
         cont['product'] = cont['product'].value
         cont['date'] = cur_date
         print(cont)
-        contractdb.update_one({'gateway_name': 'ctp'}, {
+        contractdb.update_one({'gateway_name': 'ctp', 'symbol': cont['symbol']}, {
             '$set': cont}, upsert=True)
 
     for contract in app.recorder.get_all_contracts():
