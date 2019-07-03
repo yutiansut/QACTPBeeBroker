@@ -84,18 +84,6 @@ class DataRecorder(ExtAbstract):
 
 def go():
     app = CtpBee("last", __name__)
-    # info = {
-    #     "CONNECT_INFO": {
-    #         "userid": "88715993",
-    #         "password": "yt888999",
-    #         "brokerid": "3040",
-    #         "md_address": "tcp://180.169.85.204:61205",
-    #         "td_address": "tcp://180.169.85.204:61213",
-    #         "appid": "client_AQZPC_2.0.0",
-    #         "auth_code": "SE6KFVIQ540AIDU2",
-    #     },
-    #     "TD_FUNC": False,
-    # }
     info = {
         "CONNECT_INFO": {
             "userid": "089131",
