@@ -79,8 +79,8 @@ def go():
             "userid": "133496",
             "password": "QCHL1234",
             "brokerid": "9999",
-            "md_address": "tcp://180.168.146.187:10011",
-            "td_address": "tcp://180.168.146.187:10001",
+            "md_address": "tcp://218.202.237.33 :10012",
+            "td_address": "tcp://218.202.237.33 :10002",
             "appid": "simnow_client_test",
             "auth_code": "0000000000000000",
         },
@@ -90,19 +90,21 @@ def go():
     app.config.from_mapping(info)
     data_recorder = DataRecorder("data_recorder", app)
     app.start()
+    print('start engine')
     import time
-    time.sleep(2)
+    time.sleep(5)
     contracts = app.recorder.get_all_contracts()
+    print(contracts)
     cur_date = str(date.today())
-    cur_contract = []
+    contractdb = pymongo.MongoClient().QAREALTIME.contract
     for item in contracts:
         cont = item.__dict__
-        cont['exchange'] =cont['exchange'].value
+        cont['exchange'] = cont['exchange'].value
         cont['product'] = cont['product'].value
-        cur_contract.append(cont)
-
-    pymongo.MongoClient().QAREALTIME.contract.update_one({'exchange': 'ctp'}, {
-        '$set': {'contract': cur_contract, 'date': cur_date}},upsert=True)
+        cont['date'] = cur_date
+        print(cont)
+        contractdb.update_one({'gateway_name': 'ctp'}, {
+            '$set': cont}, upsert=True)
 
     for contract in app.recorder.get_all_contracts():
         print(contract.symbol)
