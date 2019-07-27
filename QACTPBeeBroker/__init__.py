@@ -1,75 +1,56 @@
-import multiprocessing
-from string import digits
-import json
-from json import dumps
-from datetime import time, datetime, date
-from time import sleep
+from datetime import date
 
-from ctpbee import ExtAbstract
-from ctpbee import CtpBee
-from ctpbee import subscribe
-
-from QAPUBSUB.producer import publisher_routing
 import pymongo
+from QAPUBSUB.producer import publisher_routing
+from ctpbee import CtpBee
+from ctpbee import CtpbeeApi
+from ctpbee import dumps
+from ctpbee import auth_time
 
-
-def auth_time(timed):
-    from datetime import time
-    DAY_START = time(9, 0)  # 日盘启动和停止时间
-    DAY_END = time(15, 0)
-    NIGHT_START = time(21, 0)  # 夜盘启动和停止时间
-    NIGHT_END = time(2, 30)
-
-    if timed <= DAY_END and timed >= DAY_START:
-        return True
-    if timed >= NIGHT_START:
-        return True
-    if timed <= NIGHT_END:
-        return True
-    return False
-
-
-class DataRecorder(ExtAbstract):
+class DataRecorder(CtpbeeApi):
     def __init__(self, name, app=None):
         super().__init__(name, app)
-        self.tick_database_name = "tick"
-        self.bar_base_name = "bar"
-        self.shared_data = {}
-        self.created = False
-        self.recover = False
-        self.move = []
-        self.mimi = set()
         self.pub = publisher_routing(exchange='CTPX', routing_key='')
 
     def on_trade(self, trade):
         pass
 
     def on_contract(self, contract):
-        pass
+        """ 订阅所有合约代码 """
+        self.app.subscribe(contract.symbol)
 
     def on_order(self, order):
         pass
 
+    def on_log(self, log):
+        """ 处理log信息 """
+        pass
+
     def on_tick(self, tick):
-        """tick process function"""
-        symbol = tick.symbol
-        r = tick.__dict__
+        """ 处理tick推送 """
+        if not auth_time(tick.datetime.time()):
+            return
         try:
-            r['exchange'] = str(tick.exchange.value)
-            r['datetime'] = str(r['datetime'])
-            x = json.dumps(r)
-            self.pub.pub(x, routing_key=r['symbol'])
+            x = dumps(tick) #
+            self.pub.pub(x, routing_key=tick.symbol)
         except Exception as e:
             print(e)
 
     def on_bar(self, bar):
-        """bar process function"""
-        bar.exchange = bar.exchange.value
-        interval = bar.interval
+        """ 处理bar推送 """
+        pass
+
+    def on_position(self, position) -> None:
+        """ 处理持仓推送 """
+        pass
+
+    def on_account(self, account) -> None:
+        """ 处理账户信息 """
+        pass
 
     def on_shared(self, shared):
-        """process shared function"""
-        # print(shared)
+        """ 处理分时图数据 """
+        pass
 
 
 def go():
@@ -88,7 +69,8 @@ def go():
     }
 
     app.config.from_mapping(info)
-    data_recorder = DataRecorder("data_recorder", app)
+    data_recorder = DataRecorder("data_recorder")
+    app.add_extension(data_recorder)  # 或者直接  data_recorder = DataRecorder("data_recorder", app)
     app.start()
     print('start engine')
     import time
@@ -105,10 +87,6 @@ def go():
         print(cont)
         contractdb.update_one({'gateway_name': 'ctp', 'symbol': cont['symbol']}, {
             '$set': cont}, upsert=True)
-
-    for contract in app.recorder.get_all_contracts():
-        print(contract.symbol)
-        subscribe(contract.symbol)
 
 
 if __name__ == '__main__':

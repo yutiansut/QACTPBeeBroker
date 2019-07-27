@@ -1,7 +1,6 @@
 from QAPUBSUB.consumer import subscriber_routing
 import click
 
-
 @click.command()
 @click.option('--code',default='rb1910')
 def sub(code):
