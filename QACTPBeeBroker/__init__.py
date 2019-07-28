@@ -4,8 +4,9 @@ import pymongo
 from QAPUBSUB.producer import publisher_routing
 from ctpbee import CtpBee
 from ctpbee import CtpbeeApi
-from ctpbee import dumps
 from ctpbee import auth_time
+from ctpbee import dumps
+
 
 class DataRecorder(CtpbeeApi):
     def __init__(self, name, app=None):
@@ -29,9 +30,10 @@ class DataRecorder(CtpbeeApi):
     def on_tick(self, tick):
         """ 处理tick推送 """
         if not auth_time(tick.datetime.time()):
+            """ 过滤非交易时间的tick """
             return
         try:
-            x = dumps(tick) #
+            x = dumps(tick)  #
             self.pub.pub(x, routing_key=tick.symbol)
         except Exception as e:
             print(e)
