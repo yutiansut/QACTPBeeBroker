@@ -47,7 +47,7 @@ KEYWORDS = ["quantaxis", "quant", "finance", "Backtest", 'Framework']
 
 AUTHOR_EMAIL = "yutiansut@qq.com"
 
-URL = "https://github.com/yutiansut/QUANTAXIS_RealtimeCollector"
+URL = "https://github.com/yutiansut/QACTPBEEBROKER"
 
 
 LICENSE = "MIT"
