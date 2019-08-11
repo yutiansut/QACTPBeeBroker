@@ -60,13 +60,13 @@ class DataRecorder(CtpbeeApi):
 
 
 @click.command()
-@click.option('userid', default="133496")
-@click.option('password', default="QCHL1234")
-@click.option('brokerid', default="9999")
-@click.option('mdaddr', default="tcp://218.202.237.33:10112")
-@click.option('tdaddr', default="tcp://218.202.237.33:10102")
-@click.option('appid', default="simnow_client_test")
-@click.option('authcode', default="0000000000000000")
+@click.option('--userid', default="133496")
+@click.option('--password', default="QCHL1234")
+@click.option('--brokerid', default="9999")
+@click.option('--mdaddr', default="tcp://218.202.237.33:10112")
+@click.option('--tdaddr', default="tcp://218.202.237.33:10102")
+@click.option('--appid', default="simnow_client_test")
+@click.option('--authcode', default="0000000000000000")
 def go(userid, password, brokerid, mdaddr, tdaddr, appid, authcode):
     app = CtpBee("last", __name__)
     info = {
