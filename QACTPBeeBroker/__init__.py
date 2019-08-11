@@ -8,6 +8,9 @@ from ctpbee import CtpbeeApi
 from ctpbee import auth_time
 from ctpbee import dumps
 
+__version__ = '1.0'
+__author__ = 'yutiansut'
+
 
 class DataRecorder(CtpbeeApi):
     def __init__(self, name, app=None):
