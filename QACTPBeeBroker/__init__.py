@@ -8,7 +8,7 @@ from ctpbee import CtpbeeApi
 from ctpbee import auth_time
 from ctpbee import dumps
 
-__version__ = '1.0'
+__version__ = '1.1'
 __author__ = 'yutiansut'
 
 
