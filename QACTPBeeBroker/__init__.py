@@ -1,6 +1,7 @@
 from datetime import date
 
 import pymongo
+import click
 from QAPUBSUB.producer import publisher_routing
 from ctpbee import CtpBee
 from ctpbee import CtpbeeApi
@@ -55,24 +56,33 @@ class DataRecorder(CtpbeeApi):
         pass
 
 
-def go():
+@click.command()
+@click.option('userid', default="133496")
+@click.option('password', default="QCHL1234")
+@click.option('brokerid', default="9999")
+@click.option('mdaddr', default="tcp://218.202.237.33:10112")
+@click.option('tdaddr', default="tcp://218.202.237.33:10102")
+@click.option('appid', default="simnow_client_test")
+@click.option('authcode', default="0000000000000000")
+def go(userid, password, brokerid, mdaddr, tdaddr, appid, authcode):
     app = CtpBee("last", __name__)
     info = {
         "CONNECT_INFO": {
-            "userid": "133496",
-            "password": "QCHL1234",
-            "brokerid": "9999",
-            "md_address": "tcp://218.202.237.33:10112",
-            "td_address": "tcp://218.202.237.33:10102",
-            "appid": "simnow_client_test",
-            "auth_code": "0000000000000000",
+            "userid": userid,
+            "password": password,
+            "brokerid": brokerid,
+            "md_address": mdaddr,
+            "td_address": tdaddr,
+            "appid": appid,
+            "auth_code": authcode,
         },
         "TD_FUNC": True,
     }
 
     app.config.from_mapping(info)
     data_recorder = DataRecorder("data_recorder")
-    app.add_extension(data_recorder)  # 或者直接  data_recorder = DataRecorder("data_recorder", app)
+    # 或者直接  data_recorder = DataRecorder("data_recorder", app)
+    app.add_extension(data_recorder)
     app.start()
     print('start engine')
     import time
