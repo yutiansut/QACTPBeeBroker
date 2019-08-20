@@ -1,21 +1,20 @@
 from datetime import date
 
-import pymongo
 import click
-from QAPUBSUB.producer import publisher_routing
-from ctpbee import CtpBee
-from ctpbee import CtpbeeApi
-from ctpbee import auth_time
-from ctpbee import dumps
+import pymongo
 
-__version__ = '1.1'
+from ctpbee import CtpBee, CtpbeeApi, auth_time, dumps
+from QACTPBeeBroker.setting import eventmq_ip, ip
+from QAPUBSUB.producer import publisher_routing
+
+__version__ = '1.2'
 __author__ = 'yutiansut'
 
 
 class DataRecorder(CtpbeeApi):
     def __init__(self, name, app=None):
         super().__init__(name, app)
-        self.pub = publisher_routing(exchange='CTPX', routing_key='')
+        self.pub = publisher_routing(host=eventmq_ip, exchange='CTPX', routing_key='')
 
     def on_trade(self, trade):
         pass
@@ -93,7 +92,7 @@ def go(userid, password, brokerid, mdaddr, tdaddr, appid, authcode):
     contracts = app.recorder.get_all_contracts()
     print(contracts)
     cur_date = str(date.today())
-    contractdb = pymongo.MongoClient().QAREALTIME.contract
+    contractdb = pymongo.MongoClient(host=ip).QAREALTIME.contract
     for item in contracts:
         cont = item.__dict__
         cont['exchange'] = cont['exchange'].value
