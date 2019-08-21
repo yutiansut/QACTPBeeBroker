@@ -24,7 +24,6 @@ with io.open('QACTPBeeBroker/__init__.py', 'rt', encoding='utf8') as f:
     AUTHOR = re.search(r'__author__ = \'(.*?)\'', context).group(1)
 
 
-
 def read(fname):
 
     return codecs.open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -40,7 +39,6 @@ PACKAGES = ["QACTPBeeBroker"]
 DESCRIPTION = "QACTPBeeBroker: broker for ctp bee"
 
 
-
 KEYWORDS = ["quantaxis", "quant", "finance", "Backtest", 'Framework']
 """
 """
@@ -51,8 +49,6 @@ URL = "https://github.com/yutiansut/QACTPBEEBROKER"
 
 
 LICENSE = "MIT"
-
-
 
 
 setup(
@@ -66,7 +62,7 @@ setup(
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
     ],
-    install_requires=['quantaxis','quantaxis_pubsub'],
+    install_requires=['quantaxis', 'quantaxis_pubsub>=1.6.1'],
     entry_points={
         'console_scripts': [
             'QACTPBEE = QACTPBeeBroker.__init__:go'
