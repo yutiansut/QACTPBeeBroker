@@ -7,7 +7,7 @@ from ctpbee import CtpBee, CtpbeeApi, auth_time, dumps
 from QACTPBeeBroker.setting import eventmq_ip, ip
 from QAPUBSUB.producer import publisher_routing
 
-__version__ = '1.2'
+__version__ = '1.3'
 __author__ = 'yutiansut'
 
 
@@ -37,6 +37,7 @@ class DataRecorder(CtpbeeApi):
             return
         try:
             x = dumps(tick)  #
+            print(tick.symbol)
             self.pub.pub(x, routing_key=tick.symbol)
         except Exception as e:
             print(e)
@@ -99,8 +100,12 @@ def go(userid, password, brokerid, mdaddr, tdaddr, appid, authcode):
         cont['product'] = cont['product'].value
         cont['date'] = cur_date
         print(cont)
-        contractdb.update_one({'gateway_name': 'ctp', 'symbol': cont['symbol']}, {
-            '$set': cont}, upsert=True)
+        try:
+            contractdb.update_one({'gateway_name': 'ctp', 'symbol': cont['symbol']}, {
+                '$set': cont}, upsert=True)
+        except Exception as e:
+            print(e)
+
 
 
 if __name__ == '__main__':

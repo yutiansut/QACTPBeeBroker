@@ -62,7 +62,7 @@ setup(
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
     ],
-    install_requires=['quantaxis', 'quantaxis_pubsub==1.6.2'],
+    install_requires=['quantaxis', 'quantaxis_pubsub>=1.6.3', 'ctpbee<=0.31.2'],
     entry_points={
         'console_scripts': [
             'QACTPBEE = QACTPBeeBroker.__init__:go'
