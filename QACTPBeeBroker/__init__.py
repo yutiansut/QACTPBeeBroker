@@ -7,7 +7,7 @@ from ctpbee import CtpBee, CtpbeeApi, auth_time, dumps
 from QACTPBeeBroker.setting import eventmq_ip, ip
 from QAPUBSUB.producer import publisher_routing, publisher_topic
 
-__version__ = '1.3'
+__version__ = '1.4'
 __author__ = 'yutiansut'
 
 
@@ -121,7 +121,7 @@ def go(userid, password, brokerid, mdaddr, tdaddr, appid, authcode):
 @click.option('--appid', default="simnow_client_test")
 @click.option('--authcode', default="0000000000000000")
 def gopro(userid, password, brokerid, mdaddr, tdaddr, appid, authcode):
-    app = CtpBee("last", __name__,'pro')
+    app = CtpBee("last", __name__)
     info = {
         "CONNECT_INFO": {
             "userid": userid,
@@ -136,7 +136,7 @@ def gopro(userid, password, brokerid, mdaddr, tdaddr, appid, authcode):
     }
 
     app.config.from_mapping(info)
-    data_recorder = DataRecorder("data_recorder")
+    data_recorder = DataRecorder("data_recorder", model='pro')
     # 或者直接  data_recorder = DataRecorder("data_recorder", app)
     app.add_extension(data_recorder)
     app.start()
