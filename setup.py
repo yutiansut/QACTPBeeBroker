@@ -65,7 +65,8 @@ setup(
     install_requires=['quantaxis', 'quantaxis_pubsub==1.6.2'],
     entry_points={
         'console_scripts': [
-            'QACTPBEE = QACTPBeeBroker.__init__:go'
+            'QACTPBEE = QACTPBeeBroker.__init__:go',
+            'QACTPBEEPRO = QACTPBeeBroker.__init__:gopro'
         ]
     },
     # install_requires=requirements,

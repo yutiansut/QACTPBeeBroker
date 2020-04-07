@@ -5,16 +5,20 @@ import pymongo
 
 from ctpbee import CtpBee, CtpbeeApi, auth_time, dumps
 from QACTPBeeBroker.setting import eventmq_ip, ip
-from QAPUBSUB.producer import publisher_routing
+from QAPUBSUB.producer import publisher_routing, publisher_topic
 
 __version__ = '1.2'
 __author__ = 'yutiansut'
 
 
 class DataRecorder(CtpbeeApi):
-    def __init__(self, name, app=None):
+    def __init__(self, name, app=None, model='ctpx'):
         super().__init__(name, app)
-        self.pub = publisher_routing(host=eventmq_ip, exchange='CTPX', routing_key='')
+        if model == 'ctpx':
+            self.pub = publisher_routing(host=eventmq_ip, exchange='CTPX', routing_key='')
+        else:
+            self.pub = publisher_topic(host=eventmq_ip, exchange='CTPPRO', routing_key='')
+
 
     def on_trade(self, trade):
         pass
@@ -103,5 +107,48 @@ def go(userid, password, brokerid, mdaddr, tdaddr, appid, authcode):
             '$set': cont}, upsert=True)
 
 
+@click.command()
+@click.option('--userid', default="133496")
+@click.option('--password', default="QCHL1234")
+@click.option('--brokerid', default="9999")
+@click.option('--mdaddr', default="tcp://218.202.237.33:10112")
+@click.option('--tdaddr', default="tcp://218.202.237.33:10102")
+@click.option('--appid', default="simnow_client_test")
+@click.option('--authcode', default="0000000000000000")
+def gopro(userid, password, brokerid, mdaddr, tdaddr, appid, authcode):
+    app = CtpBee("last", __name__,'pro')
+    info = {
+        "CONNECT_INFO": {
+            "userid": userid,
+            "password": password,
+            "brokerid": brokerid,
+            "md_address": mdaddr,
+            "td_address": tdaddr,
+            "appid": appid,
+            "auth_code": authcode,
+        },
+        "TD_FUNC": True,
+    }
+
+    app.config.from_mapping(info)
+    data_recorder = DataRecorder("data_recorder")
+    # 或者直接  data_recorder = DataRecorder("data_recorder", app)
+    app.add_extension(data_recorder)
+    app.start()
+    print('start engine')
+    import time
+    time.sleep(5)
+    contracts = app.recorder.get_all_contracts()
+    print(contracts)
+    cur_date = str(date.today())
+    contractdb = pymongo.MongoClient(host=ip).QAREALTIME.contract
+    for item in contracts:
+        cont = item.__dict__
+        cont['exchange'] = cont['exchange'].value
+        cont['product'] = cont['product'].value
+        cont['date'] = cur_date
+        print(cont)
+        contractdb.update_one({'gateway_name': 'ctp', 'symbol': cont['symbol']}, {
+            '$set': cont}, upsert=True)
 if __name__ == '__main__':
     go()
