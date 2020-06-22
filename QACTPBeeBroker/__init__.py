@@ -14,10 +14,11 @@ __author__ = 'yutiansut'
 class DataRecorder(CtpbeeApi):
     def __init__(self, name, app=None, model='ctpx'):
         super().__init__(name, app)
-        if model == 'ctpx':
+        self.model =  model
+        if self.model == 'ctpx':
             self.pub = publisher_routing(host=eventmq_ip, exchange='CTPX', routing_key='')
         else:
-            self.pub = publisher_topic(host=eventmq_ip, exchange='CTPPRO', routing_key='')
+            self.pub = publisher_topic(host=eventmq_ip, exchange='CTPPRO', routing_key='', durable=True)
 
 
     def on_trade(self, trade):
@@ -42,7 +43,10 @@ class DataRecorder(CtpbeeApi):
         try:
             x = dumps(tick)  #
             print(tick.symbol)
-            self.pub.pub(x, routing_key=tick.symbol)
+
+        self.pub.pub(x, routing_key=tick.symbol)
+
+            
         except Exception as e:
             print(e)
 
