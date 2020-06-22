@@ -44,7 +44,7 @@ class DataRecorder(CtpbeeApi):
             x = dumps(tick)  #
             print(tick.symbol)
 
-        self.pub.pub(x, routing_key=tick.symbol)
+            self.pub.pub(x, routing_key=tick.symbol)
 
             
         except Exception as e:
