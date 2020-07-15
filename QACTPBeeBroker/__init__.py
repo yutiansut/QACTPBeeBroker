@@ -7,7 +7,7 @@ from QACTPBeeBroker.setting import eventmq_ip, ip
 from QAPUBSUB.producer import publisher_routing, publisher_topic
 
 eventmq_ip = eval(eventmq_ip)
-__version__ = '1.4'
+__version__ = '1.5'
 __author__ = 'yutiansut'
 
 
