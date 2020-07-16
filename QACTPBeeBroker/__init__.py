@@ -40,7 +40,12 @@ class DataRecorder(CtpbeeApi):
         if not auth_time(tick.datetime.time()):
             """ 过滤非交易时间的tick """
             return
+
+        # if tick.symbol == "rb2010":
+        #     self.info(
+        #         f"买一: {tick.bid_price_1}, 买一量: {tick.bid_volume_1}, 卖一: {tick.ask_price_1}, 卖一量: {tick.ask_volume_1}")
         try:
+            setattr(tick, "preSettlementPrice", tick.pre_settlement_price)
             x = dumps(tick)  #
             self.pub.pub(x, routing_key=tick.symbol)
 
